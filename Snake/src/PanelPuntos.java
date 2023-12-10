@@ -13,14 +13,14 @@ public class PanelPuntos extends JPanel {
             setBackground(Color.DARK_GRAY);
 
             puntos = "0";
-            letra = new Font("SansSerif", Font.BOLD, 20);
+            letra = new Font("Pixel", Font.BOLD, 20);
         }
 
         public void addPoints(int points) {
-            int oldValue = Integer.parseInt(puntos);
-            oldValue += points;
-            puntos = new String(oldValue + "");
-            repaint();
+            int Anterior = Integer.parseInt(puntos);
+            Anterior = Anterior + points;
+            puntos = Anterior + "";
+            this.repaint();
         }
         public void clear() {
             puntos = "0";
@@ -30,11 +30,12 @@ public class PanelPuntos extends JPanel {
         public void paintComponent(Graphics g) {
             super.paintComponent(g);
             Graphics2D g2 = (Graphics2D) g;
+            Font letra = new Font("Pixel", Font.BOLD, 20);
             g2.setFont(letra);
-            g2.setPaint(new Color(0, 255, 51)); // verde
-            g2.drawString("Puntuacion:", 15, 32);
-            g2.setPaint(new Color(215, 34, 38)); // rojo
-            g2.drawString(puntos, 105, 32);
+            g2.setColor(new Color(0, 255, 51));
+            g2.drawString("Puntuacion: ", 15, 32);
+            g2.setColor(new Color(255, 255, 0));
+            g2.drawString(puntos, 130, 32);
         }
 
 }
