@@ -1,13 +1,6 @@
 import java.awt.geom.Ellipse2D;
 import java.io.Serializable;
 import java.util.Random;
-
-/**
- * This class represents an apple which can be ate by the snake. It appears
- * randomly somewhere within the game field.
- *
- * @author Michal Goly
- */
 public class Fruta implements Serializable {
 
     private double Hori;

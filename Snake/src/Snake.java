@@ -45,9 +45,7 @@ public class Snake implements Serializable {
         }
     }
 
-    /**
-     * @return true if game over, false otherwise
-     */
+
     public boolean isGameOver() {
         return over;
     }
@@ -55,14 +53,6 @@ public class Snake implements Serializable {
     public void nuevaDireccion(Flechas d) {
         this.dir = d;
     }
-
-    /**
-     * Moves the snake in the current direction
-     */
-
-
-
-
     private void moverCuerpo() {
         for (int i = partes.size() - 1; i > 0; i--) {
             if (i == partes.size() - 1) {

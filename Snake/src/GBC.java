@@ -1,9 +1,6 @@
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 
-/**
- * This class simplifies the use of the GridBagConstraints class.
- */
 public class GBC extends GridBagConstraints {
 
     public GBC(int gridx, int gridy) {
