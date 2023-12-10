@@ -35,11 +35,11 @@ public class PanelJuego  extends JPanel {
         Graphics2D g2 = (Graphics2D) g;
         g2.setColor(Color.RED);
         g2.fillOval((int) fru.getShape().getMinX() + 5, (int) fru.getShape().getMinY() + 5, 15, 15);
-        g2.setColor(new Color(0, 255, 51));
+        g2.setColor(new Color(0, 255, 255));
         for (Ellipse2D e : Partess) {
             g2.fill(e);
         }
-        g2.setPaint(new Color(0, 70, 0));
+        g2.setPaint(new Color(0, 100, 250));
         g2.fill(Partess.getFirst());
     }
         public void Defecto() {
