@@ -11,7 +11,7 @@ public class Snake implements Serializable {
     private Flechas dir;
 
     private Ellipse2D.Double temp;
-    private Ellipse2D.Double ass;
+    private Ellipse2D.Double nuevaP;
 
     private boolean over = false;
 
@@ -37,12 +37,11 @@ public class Snake implements Serializable {
                 return;
             }
         }
-        // Ate fru
         if (head.getMinX() == fru.getShape().getMinX()
                 && head.getMinY() == fru.getShape().getMinY()) {
             PP.addPoints(25);
             fru.SigFruta(this);
-            partes.add(ass);
+            partes.add(nuevaP);
         }
     }
 
@@ -67,7 +66,7 @@ public class Snake implements Serializable {
     private void moverCuerpo() {
         for (int i = partes.size() - 1; i > 0; i--) {
             if (i == partes.size() - 1) {
-                ass = (Ellipse2D.Double) partes.get(i).clone();
+                nuevaP = (Ellipse2D.Double) partes.get(i).clone();
             }
             temp = (Ellipse2D.Double) partes.get(i - 1).clone();
             partes.set(i, temp);
