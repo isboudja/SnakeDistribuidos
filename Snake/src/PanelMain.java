@@ -11,7 +11,7 @@ public class PanelMain extends JFrame {
 
         private PanelPuntos PP;
         private PanelJuego GP;
-        private Thread t;
+        private Juego j;
 
         private Socket socket;
         private ObjectOutputStream out;
@@ -40,7 +40,7 @@ public class PanelMain extends JFrame {
             GP.setFocusable(true);
             Juego j = new Juego(socket,GP,snake, this);
             j.start();
-            this.t = j;
+            this.j = j;
         }
 
     private void componentes() {
