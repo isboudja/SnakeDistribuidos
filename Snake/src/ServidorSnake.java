@@ -16,16 +16,16 @@ public class ServidorSnake {
             System.out.println("Servidor esperando conexiones en el puerto " + 55555 + "...");
             while (true) {
                 try{
-                    Socket socket = serverSocket.accept();
+                	Socket socket = serverSocket.accept();
                 System.out.println("Cliente conectado desde " + socket.getInetAddress());
                     PanelJuego pj = new PanelJuego();
                     PanelPuntos pp = new PanelPuntos();
                     Snake snake = new Snake(pj, pp);
                     Fruta f = new Fruta(200,200);
-
                     Juego j = new Juego(socket,pj,snake,new PanelMain(snake,socket));
                     j.start();
-                    System.out.println("Escribio " + socket.getInetAddress());
+                    System.out.println("Prueba " + socket.getInetAddress());
+                   
                 } catch (IOException ex) {
                     //throw new RuntimeException(ex);
                     ex.printStackTrace();

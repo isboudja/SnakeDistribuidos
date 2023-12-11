@@ -40,7 +40,7 @@ public class Juego extends Thread {
                 PM.gO = false;
             }
             try {
-                Thread.sleep(100);
+                Juego.sleep(100);//se puede alterar la velocidad del juego cambiendo el tiempo a menor tiempo mas rapido
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }

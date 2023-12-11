@@ -3,19 +3,15 @@ import javax.swing.JPanel;
 import java.awt.*;
 
 public class PanelPuntos extends JPanel {
-        public static final int Ancho = 400;
-        public static final int Alto  = 50;
         private final Font letra;
         private String puntos;
 
         public PanelPuntos() {
-            setPreferredSize(new Dimension(Ancho, Alto));
+            setPreferredSize(new Dimension(400, 50));
             setBackground(Color.DARK_GRAY);
-
             puntos = "0";
             letra = new Font("Pixel", Font.BOLD, 20);
         }
-
         public void addPoints(int points) {
             int Anterior = Integer.parseInt(puntos);
             Anterior = Anterior + points;
@@ -25,7 +21,6 @@ public class PanelPuntos extends JPanel {
         public void clear() {
             puntos = "0";
         }
-
         @Override
         public void paintComponent(Graphics g) {
             super.paintComponent(g);

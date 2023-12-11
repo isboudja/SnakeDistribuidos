@@ -40,7 +40,7 @@ public class PanelJuego  extends JPanel {
             g2.fill(e);
         }
         g2.setPaint(new Color(0, 100, 250));
-        g2.fill(Partess.getFirst());
+        g2.fill(Partess.get(0));
     }
         public void Defecto() {
             fru = new Fruta(20, 20);

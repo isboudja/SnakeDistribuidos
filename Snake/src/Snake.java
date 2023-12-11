@@ -9,7 +9,6 @@ public class Snake implements Serializable {
     private PanelPuntos PP;
     private List<Ellipse2D.Double> partes;
     private Flechas dir;
-
     private Ellipse2D.Double temp;
     private Ellipse2D.Double nuevaP;
 
@@ -20,16 +19,14 @@ public class Snake implements Serializable {
         this.PP = p;
         iniciarPorDefecto();
     }
-
+    
     public List<Ellipse2D.Double> getCuerpo() {
         return partes;
     }
-
-
+    
     public void Colisiones() {
-        Ellipse2D.Double head = partes.getFirst();
+        Ellipse2D.Double head = partes.get(0);
         Fruta fru = PJ.getFruta();
-
         for (int i = 1; i < partes.size(); i++) {
             if (head.getMinX() == partes.get(i).getMinX()
                     && head.getMinY() == partes.get(i).getMinY()) {
@@ -44,7 +41,6 @@ public class Snake implements Serializable {
             partes.add(nuevaP);
         }
     }
-
 
     public boolean isGameOver() {
         return over;
@@ -64,8 +60,7 @@ public class Snake implements Serializable {
     }
 
     private void iniciarPorDefecto() {
-        partes = Collections
-                .synchronizedList(new ArrayList<Ellipse2D.Double>());
+        partes = Collections.synchronizedList(new ArrayList<Ellipse2D.Double>());
         partes.add(new Ellipse2D.Double(260, 260, 20, 20));
         partes.add(new Ellipse2D.Double(260, 280, 20, 20));
         partes.add(new Ellipse2D.Double(260, 300, 20, 20));
@@ -76,42 +71,36 @@ public class Snake implements Serializable {
         switch (dir) {
             case ARRIBA:
                 moverCuerpo();
-                double nuevaYA = partes.getFirst().getMinY() - 20;
-                partes.set(0, new Ellipse2D.Double(partes.getFirst().getMinX(), nuevaYA, 20, 20));
+                double nuevaYA = partes.get(0).getMinY() - 20;
+                partes.set(0, new Ellipse2D.Double(partes.get(0).getMinX(), nuevaYA, 20, 20));
                 if (nuevaYA < 0) {
                     over = true;
                 }
                 break;
-
             case IZQUIERDA:
                 moverCuerpo();
-                double nuevaXI = partes.getFirst().getMinX() - 20;
-                partes.set(0, new Ellipse2D.Double(nuevaXI, partes.getFirst().getMinY(), 20, 20));
+                double nuevaXI = partes.get(0).getMinX() - 20;
+                partes.set(0, new Ellipse2D.Double(nuevaXI, partes.get(0).getMinY(), 20, 20));
                 if (nuevaXI < 0) {
                     over = true;
                 }
                 break;
-
             case DERECHA:
                 moverCuerpo();
-                double nuevaXD = partes.getFirst().getMinX() + 20;
-                partes.set(0, new Ellipse2D.Double(nuevaXD, partes.getFirst().getMinY(),20, 20));
-
+                double nuevaXD = partes.get(0).getMinX() + 20;
+                partes.set(0, new Ellipse2D.Double(nuevaXD, partes.get(0).getMinY(),20, 20));
                 if (nuevaXD > PJ.getBounds().getMaxX()) {
                     over = true;
                 }
                 break;
-
             case ABAJO:
                 moverCuerpo();
-                double nuevaYAb = partes.getFirst().getMinY() + 20;
-                partes.set(0, new Ellipse2D.Double(partes.getFirst().getMinX(), nuevaYAb, 20, 20));
-
+                double nuevaYAb = partes.get(0).getMinY() + 20;
+                partes.set(0, new Ellipse2D.Double(partes.get(0).getMinX(), nuevaYAb, 20, 20));
                 if (nuevaYAb > PJ.getBounds().getMaxY()) {
                     over = true;
                 }
                 break;
-
             default:
                 break;
         }

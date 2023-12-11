@@ -2,7 +2,6 @@ import java.awt.geom.Ellipse2D;
 import java.io.Serializable;
 import java.util.Random;
 public class Fruta implements Serializable {
-
     private double Hori;
     private double Verti;
     public Fruta(double x, double y) {
@@ -22,7 +21,7 @@ public class Fruta implements Serializable {
         Random random = new Random();
         double d;
         do {
-            d = random.nextInt(400);  // Genera un número aleatorio entre 0 (inclusive) y 400 (exclusive)
+            d = random.nextInt(400);  
         } while (d % 20 != 0);
         return d;
     }

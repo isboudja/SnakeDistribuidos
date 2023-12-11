@@ -31,18 +31,8 @@ public class PanelMain extends JFrame {
             empezarJogo();
             iniciarGUI();
         }
-    public PanelMain() {
-        componentes();
-        empezarJogo();
-        iniciarGUI();
-    }
-
     public boolean isGameOver() {
-
-
             return gO;
-
-
     }
         private void empezarJogo() {
             snake = new Snake(GP, PP);
@@ -75,11 +65,8 @@ public class PanelMain extends JFrame {
         GP.setCuerpoSnake(s.getParts());
         GP.setFruta(f);
         GP.repaint();
-
-
     }
 */
-
         private void iniciarGUI() {
             pack();
             setTitle("Snake");
@@ -93,9 +80,7 @@ public class PanelMain extends JFrame {
             t.start();
         }
         public void gameOver() {
-            int respuestaCli = JOptionPane.showConfirmDialog(this,
-                    "Nueva Partida?", "Fin del Juego!", JOptionPane
-                            .OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+            int respuestaCli = JOptionPane.showConfirmDialog(this,"Nueva Partida?", "Fin del Juego!", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
             switch (respuestaCli) {
                 case JOptionPane.OK_OPTION:
                     direction = Flechas.IZQUIERDA;
@@ -128,17 +113,6 @@ public class PanelMain extends JFrame {
                     dispose();
                     break;
             }
-        }
-
-        public static void main(String[] args) {
-
-            EventQueue.invokeLater(new Runnable() {
-
-                @Override
-                public void run() {
-                    new PanelMain();
-                }
-            });
         }
     private class KeyboardHandler extends KeyAdapter {
 
