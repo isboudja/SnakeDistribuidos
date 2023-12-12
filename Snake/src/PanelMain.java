@@ -77,7 +77,7 @@ public class PanelMain extends JFrame {
         }
         public void nuevaPartida() {
             started = true;
-            t.start();
+            j.start();
         }
         public void gameOver() {
             int respuestaCli = JOptionPane.showConfirmDialog(this,"Nueva Partida?", "Fin del Juego!", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
