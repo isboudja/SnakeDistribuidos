@@ -7,41 +7,49 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import java.io.*;
 import java.net.Socket;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
+
 public class PanelMain extends JFrame {
 
-        private PanelPuntos PP;
-        private PanelJuego GP;
-        private Juego j;
+    private PanelPuntos PP;
+    private PanelJuego GP;
+    private Juego j;
 
-        private Socket socket;
-        private ObjectOutputStream out;
-        private ObjectInputStream in;
-        private Snake snake;
+    private Socket socket;
+    private Snake snake;
 
-        private Flechas direction = Flechas.ABAJO;
+    private CountDownLatch latch;
 
-        private boolean started = false;
+    private final ConcurrentHashMap<String, Integer> puntuaciones;
 
-        public boolean gO = false;
 
-        public PanelMain(Snake s,Socket socket) {
-            componentes();
-            this.snake = s;
-            this.socket = socket;
-            empezarJogo();
-            iniciarGUI();
-        }
-    public boolean isGameOver() {
-            return gO;
+
+    private Flechas direction = Flechas.ABAJO;
+    private boolean started = false;
+    public boolean gO = false;
+
+    public PanelMain(Snake s, Socket socket, CountDownLatch l,ConcurrentHashMap<String, Integer> puntuaciones) {
+        this.snake = s;
+        this.socket = socket;
+        this.latch = l;
+        this.puntuaciones = puntuaciones;
+        componentes();
+        iniciarGUI();
+        empezarJuego();
     }
-        private void empezarJogo() {
-            snake = new Snake(GP, PP);
-            GP.addKeyListener(new KeyboardHandler());
-            GP.setFocusable(true);
-            Juego j = new Juego(socket,GP,snake, this);
-            j.start();
-            this.j = j;
-        }
+
+    public boolean isGameOver() {
+        return gO;
+    }
+
+    private void empezarJuego() {
+        snake = new Snake(GP, PP);
+        GP.addKeyListener(new KeyboardHandler());
+        GP.setFocusable(true);
+        j = new Juego(socket, GP, snake, this,latch,puntuaciones);
+        j.start();
+    }
 
     private void componentes() {
         setLayout(new GridBagLayout());
@@ -52,73 +60,44 @@ public class PanelMain extends JFrame {
 
         GP = new PanelJuego();
         add(GP, new GBC(0, 0, 8, 8));
-
     }
 
-    protected void setSnake(Snake s) {
-       this.snake = s;
-
+    private void iniciarGUI() {
+        pack();
+        setTitle("Snake Multijugador");
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setResizable(false);
+        setVisible(true);
     }
 
-    /* Intento Fallido
-    protected void ActGP(Snake s,Fruta f) {
-        GP.setCuerpoSnake(s.getParts());
-        GP.setFruta(f);
-        GP.repaint();
-    }
-*/
-        private void iniciarGUI() {
-            pack();
-            setTitle("Snake");
-            setLocationRelativeTo(null);
-            setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            setResizable(false);
-            setVisible(true);
-        }
-        public void nuevaPartida() {
-            started = true;
-            j.start();
-        }
-        public void gameOver() {
-            int respuestaCli = JOptionPane.showConfirmDialog(this,"Nueva Partida?", "Fin del Juego!", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
-            switch (respuestaCli) {
-                case JOptionPane.OK_OPTION:
-                    direction = Flechas.IZQUIERDA;
-                    started = false;
-                    snake = new Snake(GP, PP);
-                    PP.clear();
-                    GP.Defecto();
-                    PP.repaint();
-                    GP.repaint();
-                    Juego j = new Juego(socket,GP, snake, this);
-                    j.start();
-                    break;
+    public void gameOver() {
+        try {
+            // Notificar al servidor que el juego ha terminado y enviar la puntuación
+            int puntuacion = PP.getPuntos();
+            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+            out.println("Puntuacion: " + puntuacion);
+            out.println("FIN");
 
-                case JOptionPane.CANCEL_OPTION:
-                    try (DataOutputStream w = new DataOutputStream(socket.getOutputStream());){
-                        w.writeBytes("FIN");
-                        w.flush();
-                    if (out != null) {
-                        out.close();
-                    }
-                    if (in != null) {
-                        in.close();
-                    }
-                    if (socket != null) {
-                        socket.close();
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                    dispose();
-                    break;
-            }
+            JOptionPane.showMessageDialog(this, "Fin del Juego\nPuntuación: " + puntuacion, "Game Over", JOptionPane.INFORMATION_MESSAGE);
+
+            // Cerrar la conexión
+            socket.close();
+            dispose();
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+    }
+
+    public int getPuntos() {
+        return PP.getPuntos(); // Accede a la puntuación desde PanelPuntos
+    }
+
     private class KeyboardHandler extends KeyAdapter {
-
         @Override
         public void keyPressed(KeyEvent e) {
-            if (!started) nuevaPartida();
+            if (!started) started = true;
 
             if (snake != null) {
                 switch (e.getKeyCode()) {
@@ -153,5 +132,4 @@ public class PanelMain extends JFrame {
             }
         }
     }
-
-    }
+}

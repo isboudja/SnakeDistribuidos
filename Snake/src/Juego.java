@@ -1,23 +1,27 @@
 
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
+import java.io.*;
 import java.net.Socket;
+
+import java.io.IOException;
+import java.net.Socket;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
 
 public class Juego extends Thread {
 
-    //private ObjectOutputStream out; intento de hacerlo con Object
     private PanelMain PM;
     private PanelJuego PJ;
     private Snake s;
-    //private ObjectInputStream in;
     private Socket socket;
     private Fruta f;
+    private boolean jt = false; // Juego terminado
+    private String nombre;
 
-    private boolean jt =false;
+    private CountDownLatch latch;
 
+    private ConcurrentHashMap<String, Integer> puntuaciones;
 
-    public Juego(Socket s1,PanelJuego pj, Snake snake, PanelMain pm) {
+    public Juego(Socket s1, PanelJuego pj, Snake snake, PanelMain pm, CountDownLatch latch,ConcurrentHashMap<String, Integer> puntuaciones) {
         f = new Fruta(200, 200);
         this.PM = pm;
         this.s = snake;
@@ -26,79 +30,60 @@ public class Juego extends Thread {
         this.PJ.setCuerpoSnake(snake.getCuerpo());
         this.PJ.setFruta(f);
         this.s.nuevaDireccion(Flechas.ARRIBA);
+        this.latch = latch; // Recibimos el CountDownLatch
+        this.puntuaciones = puntuaciones;
     }
+
+    @Override
     public void run() {
-        while (!jt) {
-            s.move();
-            s.Colisiones();
-            if (s.isGameOver()) {
-                jt = true;
-                PM.gO = true;
-            }
-            if (!jt) {
-                PJ.repaint();
-                PM.gO = false;
-            }
-            try {
-                Juego.sleep(100);//se puede alterar la velocidad del juego cambiendo el tiempo a menor tiempo mas rapido
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        if (PM.isGameOver()) {
-            PM.gameOver();
-        }
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+             PrintStream out = new PrintStream(socket.getOutputStream())) {
 
-    }
+            String nombreJugador = reader.readLine();
+            this.nombre = nombreJugador; // Guardamos el nombre del jugador
 
-    //Intento fallido
-   /* public void run() {
-        try (ObjectOutputStream Out = new ObjectOutputStream(socket.getOutputStream());
-             ObjectInputStream in = new ObjectInputStream(socket.getInputStream())) {
+            System.out.println("Jugador conectado: " + nombreJugador);
+            latch.countDown();
+            latch.await();
 
-            while (!socket.isClosed() && socket.isConnected()) {
-                try {
-                    if (in.available() > 0) {
-                        Flechas dir = (Flechas) in.readObject();
-                        s.changeDirection(dir);
-                    }
-                } catch (IOException | ClassNotFoundException e) {
-                    // Maneja las excepciones relacionadas con la lectura del objeto
-                    e.printStackTrace();
-                    break; // Sale del bucle si hay un error en la lectura
-                }
+            System.out.println("Esperando 10 segundos para iniciar el juego...");
+            Thread.sleep(10000);
 
+            // Ciclo principal del juego
+            while (!jt) {
                 s.move();
-                s.check();
+                s.Colisiones();
 
-                try {
-                    if (socket.isConnected() && !socket.isClosed()) {
-
-                        JuegoData juegoData = new JuegoData(s, f);
-                        out.writeObject(juegoData);
-                        out.flush();
-
-                    }
-                } catch (IOException e) {
-                    // Maneja las excepciones relacionadas con la escritura en el objeto
-                    e.printStackTrace();
-                    break; // Sale del bucle si hay un error en la escritura
-                }
-
+                // Si hay colisión, el juego termina
                 if (s.isGameOver()) {
-                    Thread.currentThread().interrupt();
+                    jt = true;
+                    PM.gO = true;
                 }
 
-                if (!Thread.currentThread().isInterrupted()) {
+                if (!jt) {
                     PJ.repaint();
+                    PM.gO = false;
                 }
 
-                Thread.sleep(100);
+                // Control de velocidad del juego
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
             }
-        } catch (InterruptedException | IOException ex) {
-            // Maneja las excepciones relacionadas con la interrupción y cierre del socket
-            ex.printStackTrace();
-            PM.gameOver();
+
+            // Cuando el juego termina, enviar puntuación al servidor
+            int puntuacion = PM.getPuntos(); // Método para obtener los puntos del jugador
+            if (!socket.isClosed()) {
+                out.println("Puntuacion: " + puntuacion);
+                out.println("FIN"); // Señal para indicar al servidor que el juego terminó
+            }
+
+            System.out.println("Juego terminado. Puntuación enviada: " + puntuacion);
+
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
         }
-    }*/
+    }
 }

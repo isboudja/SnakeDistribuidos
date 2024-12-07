@@ -33,4 +33,10 @@ public class PanelPuntos extends JPanel {
             g2.drawString(puntos, 130, 32);
         }
 
+    public int getPuntos() {
+        return Integer.parseInt(puntos); // Devuelve los puntos como entero
+    }
+
+
+
 }
