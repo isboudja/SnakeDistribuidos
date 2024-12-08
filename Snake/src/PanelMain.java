@@ -9,17 +9,18 @@ import java.io.*;
 import java.net.Socket;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.CyclicBarrier;
 
 public class PanelMain extends JFrame {
 
     private PanelPuntos PP;
     private PanelJuego GP;
-    private Juego j;
+    public Juego j;
 
     private Socket socket;
     private Snake snake;
 
-    private CountDownLatch latch;
+    private CyclicBarrier barrier;
 
     private final ConcurrentHashMap<String, Integer> puntuaciones;
 
@@ -29,10 +30,10 @@ public class PanelMain extends JFrame {
     private boolean started = false;
     public boolean gO = false;
 
-    public PanelMain(Snake s, Socket socket, CountDownLatch l,ConcurrentHashMap<String, Integer> puntuaciones) {
+    public PanelMain(Snake s, Socket socket, CyclicBarrier barrier,ConcurrentHashMap<String, Integer> puntuaciones) {
         this.snake = s;
         this.socket = socket;
-        this.latch = l;
+        this.barrier = barrier;
         this.puntuaciones = puntuaciones;
         componentes();
         iniciarGUI();
@@ -47,7 +48,7 @@ public class PanelMain extends JFrame {
         snake = new Snake(GP, PP);
         GP.addKeyListener(new KeyboardHandler());
         GP.setFocusable(true);
-        j = new Juego(socket, GP, snake, this,latch,puntuaciones);
+        j = new Juego(socket, GP, snake, this,barrier,puntuaciones);
         j.start();
     }
 

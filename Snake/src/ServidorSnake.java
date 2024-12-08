@@ -27,6 +27,9 @@ public class ServidorSnake {
                     while (jugadores.size() < 2) {
                         Socket socket = serverSocket.accept();
                         jugadores.add(socket);
+                        Writer w = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+                        w.write("Conectado al servidor esperando otro jugador \n");
+                        w.flush();
                         System.out.println("Cliente conectado desde " + socket.getInetAddress());
                     }
 
@@ -36,7 +39,7 @@ public class ServidorSnake {
                     Socket jugador2 = jugadores.get(1);
 
                     ManejadorClientes mc = new ManejadorClientes(jugador1, jugador2);
-                    pool.submit(mc);
+                    pool.execute(mc);
 
                 } catch (IOException ex) {
                     ex.printStackTrace();

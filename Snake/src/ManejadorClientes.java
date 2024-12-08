@@ -35,24 +35,31 @@ public class ManejadorClientes extends Thread {
             Fruta f1 = new Fruta(200, 200);
             Fruta f2 = new Fruta(200, 200);
 
-            CountDownLatch latch = new CountDownLatch(2);
-            Juego j1 = new Juego(jugador1, pj1, snake1, new PanelMain(snake1, jugador1, latch,puntuaciones), latch,puntuaciones);
-            Juego j2 = new Juego(jugador2, pj2, snake2, new PanelMain(snake2, jugador2, latch,puntuaciones), latch,puntuaciones);
+            CyclicBarrier barrier = new CyclicBarrier(2);
 
-            j1.start();
-            j2.start();
+            PanelMain panelMain1 = new PanelMain(snake1,jugador1, barrier, puntuaciones);
+            PanelMain panelMain2 = new PanelMain(snake1,jugador2, barrier, puntuaciones);
 
-            j1.join();
-            j2.join();
+            panelMain1.j.join();
+            panelMain2.j.join();
 
-            // Mostrar los resultados de la partida
-            System.out.println("Resultado final:");
-            puntuaciones.forEach((nombre, puntos) -> {
-                System.out.println("Jugador: " + nombre + " - Puntos: " + puntos);
-            });
+
+
 
         } catch (IOException | InterruptedException ex) {
             ex.printStackTrace();
+        }finally {
+            try {
+                if(jugador1 != null){
+                    jugador1.close();
+                }
+                if(jugador2 != null){
+                    jugador2.close();
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
         }
     }
 }

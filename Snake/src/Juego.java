@@ -4,8 +4,10 @@ import java.net.Socket;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.CyclicBarrier;
 
 public class Juego extends Thread {
 
@@ -17,11 +19,11 @@ public class Juego extends Thread {
     private boolean jt = false; // Juego terminado
     private String nombre;
 
-    private CountDownLatch latch;
+    private CyclicBarrier barrier;
 
     private ConcurrentHashMap<String, Integer> puntuaciones;
 
-    public Juego(Socket s1, PanelJuego pj, Snake snake, PanelMain pm, CountDownLatch latch,ConcurrentHashMap<String, Integer> puntuaciones) {
+    public Juego(Socket s1, PanelJuego pj, Snake snake, PanelMain pm, CyclicBarrier barrier,ConcurrentHashMap<String, Integer> puntuaciones) {
         f = new Fruta(200, 200);
         this.PM = pm;
         this.s = snake;
@@ -30,21 +32,20 @@ public class Juego extends Thread {
         this.PJ.setCuerpoSnake(snake.getCuerpo());
         this.PJ.setFruta(f);
         this.s.nuevaDireccion(Flechas.ARRIBA);
-        this.latch = latch; // Recibimos el CountDownLatch
+        this.barrier = barrier; // Recibimos el CountDownLatch
         this.puntuaciones = puntuaciones;
     }
 
     @Override
     public void run() {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-             PrintStream out = new PrintStream(socket.getOutputStream())) {
+             Writer writer1 = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));) {
 
             String nombreJugador = reader.readLine();
             this.nombre = nombreJugador; // Guardamos el nombre del jugador
 
             System.out.println("Jugador conectado: " + nombreJugador);
-            latch.countDown();
-            latch.await();
+            barrier.await();
 
             System.out.println("Esperando 10 segundos para iniciar el juego...");
             Thread.sleep(10000);
@@ -73,17 +74,31 @@ public class Juego extends Thread {
                 }
             }
 
-            // Cuando el juego termina, enviar puntuación al servidor
             int puntuacion = PM.getPuntos(); // Método para obtener los puntos del jugador
-            if (!socket.isClosed()) {
-                out.println("Puntuacion: " + puntuacion);
-                out.println("FIN"); // Señal para indicar al servidor que el juego terminó
+            puntuaciones.put(nombreJugador, puntuacion);
+
+            barrier.await();
+
+            for (String nombreJugador2 : puntuaciones.keySet()) {
+                puntuacion = puntuaciones.get(nombreJugador2);
+                writer1.write(nombreJugador2 + ": " + puntuacion+ "\n");
+                writer1.flush();
             }
 
-            System.out.println("Juego terminado. Puntuación enviada: " + puntuacion);
+            // Enviar mensaje FIN después de todas las puntuaciones
+
+            writer1.write("FIN\n");
+            writer1.flush();
+
+
+
+
+            // Cuando el juego termina, enviar puntuación al servidor
 
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
+        } catch (BrokenBarrierException e) {
+            throw new RuntimeException(e);
         }
     }
 }
