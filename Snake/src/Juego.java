@@ -47,7 +47,7 @@ public class Juego extends Thread {
             System.out.println("Jugador conectado: " + nombreJugador);
             barrier.await();
 
-            System.out.println("Esperando 10 segundos para iniciar el juego...");
+            System.out.println("El juego comienza en 10 segs...");
             Thread.sleep(10000);
 
             // Ciclo principal del juego
@@ -74,7 +74,7 @@ public class Juego extends Thread {
                 }
             }
 
-            int puntuacion = PM.getPuntos(); // Método para obtener los puntos del jugador
+            int puntuacion = PM.getPuntos();
             puntuaciones.put(nombreJugador, puntuacion);
 
             barrier.await();
@@ -85,15 +85,9 @@ public class Juego extends Thread {
                 writer1.flush();
             }
 
-            // Enviar mensaje FIN después de todas las puntuaciones
 
             writer1.write("FIN\n");
             writer1.flush();
-
-
-
-
-            // Cuando el juego termina, enviar puntuación al servidor
 
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();

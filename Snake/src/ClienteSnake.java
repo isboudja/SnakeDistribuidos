@@ -24,8 +24,6 @@ public class ClienteSnake {
 
             System.out.println("Conectado al servidor. Esperando a otro jugador...");
 
-            System.out.print(r.readLine());
-
             System.out.print("Ingresa tu nombre: ");
             String nombre = scanner.nextLine();
             ps.println(nombre);
@@ -38,10 +36,12 @@ public class ClienteSnake {
                 }
                 System.out.println(mensaje);
             }
-            System.out.println("El juego ha terminado. ¡Gracias por jugar!");
+            System.out.println("Fin partida ¡Gracias por jugar!");
 
         } catch (IOException e) {
             e.printStackTrace();
+        }finally {
+            scanner.close();
         }
     }
 }

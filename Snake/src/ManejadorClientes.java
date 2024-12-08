@@ -17,12 +17,7 @@ public class ManejadorClientes extends Thread {
 
     @Override
     public void run() {
-        try (
-                BufferedReader reader1 = new BufferedReader(new InputStreamReader(jugador1.getInputStream()));
-                Writer writer1 = new BufferedWriter(new OutputStreamWriter(jugador1.getOutputStream()));
-                BufferedReader reader2 = new BufferedReader(new InputStreamReader(jugador2.getInputStream()));
-                Writer writer2 = new BufferedWriter(new OutputStreamWriter(jugador2.getOutputStream()))
-        ) {
+        try{
             PanelJuego pj1 = new PanelJuego();
             PanelJuego pj2 = new PanelJuego();
 
@@ -46,7 +41,7 @@ public class ManejadorClientes extends Thread {
 
 
 
-        } catch (IOException | InterruptedException ex) {
+        } catch (InterruptedException ex) {
             ex.printStackTrace();
         }finally {
             try {

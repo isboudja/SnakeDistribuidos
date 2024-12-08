@@ -15,10 +15,10 @@ public class ServidorSnake {
     public static void main(String[] args) {
 
         final int PORT = 55555;
-
+        ExecutorService pool = Executors.newCachedThreadPool();
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
             System.out.println("Servidor esperando conexiones en el puerto " + PORT + "...");
-            ExecutorService pool = Executors.newCachedThreadPool();
+
 
             while (true) {
                 try {
@@ -27,10 +27,8 @@ public class ServidorSnake {
                     while (jugadores.size() < 2) {
                         Socket socket = serverSocket.accept();
                         jugadores.add(socket);
-                        Writer w = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-                        w.write("Conectado al servidor esperando otro jugador \n");
-                        w.flush();
                         System.out.println("Cliente conectado desde " + socket.getInetAddress());
+
                     }
 
                     System.out.println("Dos jugadores conectados. Iniciando el juego...");
@@ -46,8 +44,13 @@ public class ServidorSnake {
                 }
             }
 
+
         } catch (IOException e) {
             e.printStackTrace();
+        }finally {
+            if(pool !=null){
+                pool.shutdown();
+            }
         }
     }
 }
